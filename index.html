@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MY PORTFOLIO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    body { font-family: 'Inter', sans-serif; }
+    .heading-font { font-family: 'Anton', sans-serif; }
+    .dark-mode { background-color: #111; color: #eee; }
+    .media-container {
+      position: absolute;
+      transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+      opacity: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .media-container.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .media-container.inactive {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    .media-item {
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s ease;
+    }
+    .media-item:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900 transition-colors duration-500 overflow-hidden">
+
+  <header class="container mx-auto flex justify-between items-center py-6 px-8 border-b border-black z-20 relative">
+    <h1 class="heading-font text-2xl">MY PORTFOLIO</h1>
+    <div class="flex gap-6 text-sm">
+      <a href="#" class="hover:underline">HOME</a>
+      <a href="portfolio.html" class="hover:underline">PORTFOLIO</a>
+      <button class="hover:underline">PROFILE</button>
+      <button class="hover:underline">MATERIAL</button>
+      <button id="mode-toggle" class="ml-4 px-3 py-1 border rounded">☾</button>
+    </div>
+  </header>
+
+  <main class="relative flex flex-col items-center justify-center min-h-screen px-8 py-16">
+    <div class="absolute inset-0 overflow-hidden z-0" id="media-grid"></div>
+
+    <div class="text-center z-10">
+      <h2 class="heading-font text-6xl md:text-8xl lg:text-9xl mb-4 leading-none">CREATIVE</h2>
+      <h2 class="heading-font text-6xl md:text-8xl lg:text-9xl mb-4 leading-none">CARGO</h2>
+      <p class="text-lg md:text-xl font-light max-w-2xl mx-auto">
+        Curating digital experiences with a focus on bold design and compelling narratives.
+      </p>
+    </div>
+    
+    <div class="fixed bottom-8 left-8 p-4 bg-gray-100 bg-opacity-80 rounded-lg backdrop-blur-sm z-20 dark:bg-black dark:bg-opacity-80">
+      <h3 class="heading-font text-xl mb-4">PROJECTS</h3>
+      <ul class="space-y-2 text-sm">
+        <li class="project-item cursor-pointer hover:underline transition" data-project="projectA">01 — Project A</li>
+        <li class="project-item cursor-pointer hover:underline transition" data-project="projectB">02 — Project B</li>
+        <li class="project-item cursor-pointer hover:underline transition" data-project="projectC">03 — Project C</li>
+      </ul>
+    </div>
+  </main>
+
+  <script>
+    const projects = {
+      projectA: [
+        { type: 'image', src: 'https://placehold.co/400x600/808080/fff/png?text=Project+A+Image+1', width: '250px', height: '350px' },
+        { type: 'image', src: 'https://placehold.co/600x400/808080/fff/png?text=Project+A+Image+2', width: '400px', height: '250px' },
+      ],
+      projectB: [
+        { type: 'image', src: 'https://placehold.co/500x300/404040/fff/png?text=Project+B+Image+1', width: '350px', height: '200px' },
+        { type: 'image', src: 'https://placehold.co/300x500/404040/fff/png?text=Project+B+Image+2', width: '200px', height: '350px' },
+        { type: 'image', src: 'https://placehold.co/400x400/404040/fff/png?text=Project+B+Image+3', width: '300px', height: '300px' },
+      ],
+      projectC: [
+        { type: 'image', src: 'https://placehold.co/700x450/606060/fff/png?text=Project+C+Image+1', width: '500px', height: '320px' },
+        { type: 'image', src: 'https://placehold.co/350x550/606060/fff/png?text=Project+C+Image+2', width: '250px', height: '400px' },
+      ]
+    };
+
+    const projectItems = document.querySelectorAll('.project-item');
+    const mediaGrid = document.getElementById('media-grid');
+    const toggle = document.getElementById('mode-toggle');
+
+    let activeMediaContainers = [];
+
+    function clearMedia() {
+      activeMediaContainers.forEach(container => {
+        container.classList.remove('active');
+        container.classList.add('inactive');
+        setTimeout(() => container.remove(), 500);
+      });
+      activeMediaContainers = [];
+    }
+
+    function generateMedia(project) {
+      clearMedia();
+
+      const media = projects[project];
+      if (!media) return;
+
+      const bodyRect = document.body.getBoundingClientRect();
+      const headerHeight = document.querySelector('header').offsetHeight;
+      const projectListHeight = document.querySelector('.fixed').offsetHeight;
+      const padding = 50;
+
+      media.forEach(item => {
+        const container = document.createElement('div');
+        container.className = 'media-container';
+        container.style.width = item.width;
+        container.style.height = item.height;
+
+        let left = Math.random() * (bodyRect.width - parseInt(item.width) - (padding * 2)) + padding;
+        let top = Math.random() * (bodyRect.height - parseInt(item.height) - headerHeight - projectListHeight - (padding * 2)) + headerHeight + padding;
+        
+        container.style.left = `${left}px`;
+        container.style.top = `${top}px`;
+
+        if (item.type === 'image') {
+          const img = document.createElement('img');
+          img.src = item.src;
+          img.alt = '';
+          img.className = 'media-item w-full h-full object-cover';
+          container.appendChild(img);
+        } else if (item.type === 'video') {
+          const video = document.createElement('video');
+          video.src = item.src;
+          video.autoplay = true;
+          video.loop = true;
+          video.muted = true;
+          video.className = 'media-item w-full h-full object-cover';
+          container.appendChild(video);
+        }
+
+        mediaGrid.appendChild(container);
+        activeMediaContainers.push(container);
+
+        setTimeout(() => container.classList.add('active'), 10);
+      });
+    }
+
+    projectItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const project = item.dataset.project;
+        generateMedia(project);
+        projectItems.forEach(i => i.classList.remove('font-bold'));
+        item.classList.add('font-bold');
+      });
+    });
+    
+    // Initial content load (optional)
+    generateMedia('projectA');
+    document.querySelector('.project-item[data-project="projectA"]').classList.add('font-bold');
+
+    toggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+  </script>
+</body>
+</html>
