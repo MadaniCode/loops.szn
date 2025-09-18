@@ -40,13 +40,13 @@
 <body class="bg-gray-100 text-gray-900 transition-colors duration-500 overflow-hidden">
 
   <header class="container mx-auto flex justify-between items-center py-6 px-8 border-b border-black z-20 relative">
-    <h1 class="heading-font text-2xl">MY PORTFOLIO</h1>
+    <h1 class="heading-font text-2xl">
+      <a href="#" class="hover:underline">MY PORTFOLIO</a>
+    </h1>
     <div class="flex gap-6 text-sm">
-      <a href="#" class="hover:underline">HOME</a>
       <a href="portfolio.html" class="hover:underline">PORTFOLIO</a>
       <button class="hover:underline">PROFILE</button>
-      <button class="hover:underline">MATERIAL</button>
-      <button id="mode-toggle" class="ml-4 px-3 py-1 border rounded">☾</button>
+      <button class="hover:underline">CV</button>
     </div>
   </header>
 
@@ -61,7 +61,7 @@
       </p>
     </div>
     
-    <div class="fixed bottom-8 left-8 p-4 bg-gray-100 bg-opacity-80 rounded-lg backdrop-blur-sm z-20 dark:bg-black dark:bg-opacity-80">
+    <div class="fixed bottom-8 left-8 p-4 bg-gray-100 bg-opacity-80 rounded-lg backdrop-blur-sm z-20 text-white dark:bg-black dark:bg-opacity-80">
       <h3 class="heading-font text-xl mb-4">PROJECTS</h3>
       <ul class="space-y-2 text-sm">
         <li class="project-item cursor-pointer hover:underline transition" data-project="projectA">01 — Project A</li>
@@ -90,7 +90,6 @@
 
     const projectItems = document.querySelectorAll('.project-item');
     const mediaGrid = document.getElementById('media-grid');
-    const toggle = document.getElementById('mode-toggle');
 
     let activeMediaContainers = [];
 
@@ -161,10 +160,6 @@
     // Initial content load (optional)
     generateMedia('projectA');
     document.querySelector('.project-item[data-project="projectA"]').classList.add('font-bold');
-
-    toggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark-mode');
-    });
   </script>
 </body>
 </html>
