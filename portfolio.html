@@ -1,21 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Interactive Cargo Portfolio</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-    body { font-family: 'Inter', sans-serif; }
-    .heading-font { font-family: 'Anton', sans-serif; }
-    .sticky-list-container { position: sticky; top: 0; height: 100vh; overflow-y: auto; }
-    .preview-animate { transition: transform 0.4s ease, opacity 0.4s ease; }
-    .dark-mode { background-color: #111; color: #eee; }
-    html { scroll-behavior: smooth; }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-gray-100 text-gray-900 transition-colors duration-500">
 
@@ -33,70 +23,70 @@
   <div class="container mx-auto flex flex-col md:flex-row min-h-screen">
 
     <main class="w-full md:w-2/3 p-8 space-y-20">
-      <section id="project-1" class="project-section" data-image="https://placehold.co/800x500/808080/fff/png?text=Project+A">
-        <h3 class="heading-font text-2xl mb-4">Project A</h3>
-        <img src="https://placehold.co/1200x700/808080/fff/png?text=Project+A" class="w-full shadow transition hover:shadow-lg mb-4" />
+      <section id="project-1" class="project-section" data-image="https://placehold.co/800x500/808080/fff/png?text=Szn+X">
+        <h3 class="heading-font text-2xl mb-4">Szn X</h3>
+        <img src="https://placehold.co/1200x700/808080/fff/png?text=Szn+X" class="w-full shadow transition hover:shadow-lg mb-4" />
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <h4 class="text-lg font-semibold mb-1">Description</h4>
-            <p class="text-sm leading-relaxed">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ut sapien eu justo tincidunt consequat.</p>
+            <p class="text-sm leading-relaxed">Experimental creative direction and design execution for Szn X release visuals. Layered digital storytelling and identity work for the August release.</p>
           </div>
           <div>
             <h4 class="text-lg font-semibold mb-1">Details</h4>
-            <p class="text-sm">Client: Client A</p>
-            <p class="text-sm">Year: 2023</p>
-            <p class="text-sm">Role: Designer</p>
+            <p class="text-sm">Client: Internal</p>
+            <p class="text-sm">Year: August 2025</p>
+            <p class="text-sm">Role: Marketing Designer</p>
           </div>
         </div>
       </section>
 
-      <section id="project-2" class="project-section" data-image="https://placehold.co/800x500/404040/fff/png?text=Project+B">
-        <h3 class="heading-font text-2xl mb-4">Project B</h3>
-        <img src="https://placehold.co/1200x700/404040/fff/png?text=Project+B" class="w-full shadow transition hover:shadow-lg mb-4" />
+      <section id="project-2" class="project-section" data-image="https://placehold.co/800x500/404040/fff/png?text=Severance">
+        <h3 class="heading-font text-2xl mb-4">Severance</h3>
+        <img src="https://placehold.co/1200x700/404040/fff/png?text=Severance" class="w-full shadow transition hover:shadow-lg mb-4" />
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <h4 class="text-lg font-semibold mb-1">Description</h4>
-            <p class="text-sm leading-relaxed">Vestibulum ac lectus eu ipsum fringilla iaculis. Sed quis velit ut felis dictum fermentum.</p>
+            <p class="text-sm leading-relaxed">Designed campaign materials and produced narrative-driven edits for Severance. Focused on cinematic cuts and promotional storytelling.</p>
           </div>
           <div>
             <h4 class="text-lg font-semibold mb-1">Details</h4>
-            <p class="text-sm">Client: Client B</p>
-            <p class="text-sm">Year: 2022</p>
-            <p class="text-sm">Role: Developer</p>
+            <p class="text-sm">Client: Confidential</p>
+            <p class="text-sm">Year: March 2025</p>
+            <p class="text-sm">Role: Video Editor</p>
           </div>
         </div>
       </section>
 
-      <section id="project-3" class="project-section" data-image="https://placehold.co/800x500/606060/fff/png?text=Project+C">
-        <h3 class="heading-font text-2xl mb-4">Project C</h3>
-        <img src="https://placehold.co/1200x700/606060/fff/png?text=Project+C" class="w-full shadow transition hover:shadow-lg mb-4" />
+      <section id="project-3" class="project-section" data-image="https://placehold.co/800x500/606060/fff/png?text=iOS26">
+        <h3 class="heading-font text-2xl mb-4">iOS 26</h3>
+        <img src="https://placehold.co/1200x700/606060/fff/png?text=iOS26" class="w-full shadow transition hover:shadow-lg mb-4" />
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <h4 class="text-lg font-semibold mb-1">Description</h4>
-            <p class="text-sm leading-relaxed">Morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+            <p class="text-sm leading-relaxed">Exploration of UI paradigms and launch visuals for the iOS 26 concept. Deliverables included mockups, promotional assets and motion snippets.</p>
           </div>
           <div>
             <h4 class="text-lg font-semibold mb-1">Details</h4>
-            <p class="text-sm">Client: Client C</p>
-            <p class="text-sm">Year: 2021</p>
-            <p class="text-sm">Role: Artist</p>
+            <p class="text-sm">Client: Independent Concept</p>
+            <p class="text-sm">Year: June 2025</p>
+            <p class="text-sm">Role: Marketing Designer</p>
           </div>
         </div>
       </section>
 
-      <section id="project-4" class="project-section" data-image="https://placehold.co/800x500/707070/fff/png?text=Project+D">
-        <h3 class="heading-font text-2xl mb-4">Project D</h3>
-        <img src="https://placehold.co/1200x700/707070/fff/png?text=Project+D" class="w-full shadow transition hover:shadow-lg mb-4" />
+      <section id="project-4" class="project-section" data-image="https://placehold.co/800x500/707070/fff/png?text=YZY+App">
+        <h3 class="heading-font text-2xl mb-4">YZY App</h3>
+        <img src="https://placehold.co/1200x700/707070/fff/png?text=YZY+App" class="w-full shadow transition hover:shadow-lg mb-4" />
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <h4 class="text-lg font-semibold mb-1">Description</h4>
-            <p class="text-sm leading-relaxed">Suspendisse facilisis sagittis mi sit amet tempor. Nam sit amet nibh et enim laoreet porta.</p>
+            <p class="text-sm leading-relaxed">Creative support and promotional video edits for the YZY App launch. Focus on minimal UI framing and short-form promotional cuts.</p>
           </div>
           <div>
             <h4 class="text-lg font-semibold mb-1">Details</h4>
-            <p class="text-sm">Client: Client D</p>
-            <p class="text-sm">Year: 2020</p>
-            <p class="text-sm">Role: Intern</p>
+            <p class="text-sm">Client: YZY</p>
+            <p class="text-sm">Year: April 2024</p>
+            <p class="text-sm">Role: Video Editor</p>
           </div>
         </div>
       </section>
@@ -109,10 +99,10 @@
     <aside class="w-full md:w-1/3 p-8 border-l border-gray-300 sticky-list-container">
       <h2 class="text-3xl font-bold heading-font mb-8">PROJECTS</h2>
       <ul class="space-y-6 text-sm">
-        <li class="project-link cursor-pointer" data-id="project-1">01 — Project A</li>
-        <li class="project-link cursor-pointer" data-id="project-2">02 — Project B</li>
-        <li class="project-link cursor-pointer" data-id="project-3">03 — Project C</li>
-        <li class="project-link cursor-pointer" data-id="project-4">04 — Project D</li>
+        <li class="project-link cursor-pointer" data-id="project-1">01 — Szn X</li>
+        <li class="project-link cursor-pointer" data-id="project-2">02 — Severance</li>
+        <li class="project-link cursor-pointer" data-id="project-3">03 — iOS 26</li>
+        <li class="project-link cursor-pointer" data-id="project-4">04 — YZY App</li>
       </ul>
 
       <div id="preview-container" class="mt-10 opacity-0 preview-animate">
@@ -157,7 +147,6 @@
     }, { threshold: 0.5 });
 
     sections.forEach(section => observer.observe(section));
-
   </script>
 </body>
-</html> 
+</html>

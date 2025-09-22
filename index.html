@@ -1,39 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MY PORTFOLIO</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-    body { font-family: 'Inter', sans-serif; }
-    .heading-font { font-family: 'Anton', sans-serif; }
-    .dark-mode { background-color: #111; color: #eee; }
+    /* Inline overrides for landing page windows (keeps behavior local and predictable) */
     .media-container {
       position: absolute;
-      transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+      border: 1px solid black;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1), inset 0 -2px 4px rgba(0,0,0,0.05);
+      border-radius: 0;
       opacity: 0;
-      pointer-events: none;
-      z-index: -1;
+      transform: scale(0.95);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity 0.35s ease,
+                  box-shadow 0.2s ease;
+      z-index: 10;
+      cursor: pointer;
+      pointer-events: none; /* default inactive */
+      overflow: hidden;
     }
+
     .media-container.active {
       opacity: 1;
       transform: scale(1);
+      pointer-events: auto;
+      z-index: 50; /* in front of CREATIVE CARGO text */
     }
-    .media-container.inactive {
-      opacity: 0;
-      transform: scale(0.95);
+
+    /* Hover applies to the whole window now */
+    .media-container.hovered {
+      box-shadow: 0 12px 30px rgba(0,0,0,0.28), inset 0 -2px 4px rgba(0,0,0,0.05);
+      z-index: 70; /* highest on hover */
+      transform: scale(1.02);
     }
+
+    .media-container.dragging {
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      z-index: 80; /* front when dragging */
+    }
+
+    .media-titlebar {
+      background: linear-gradient(to bottom, #222, #111);
+      color: white;
+      font-size: 12px;
+      padding: 4px 8px;
+      font-family: "Cooper Black", serif;
+      border-bottom: 1px solid black;
+      user-select: none;
+      text-transform: uppercase;
+    }
+
     .media-item {
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: transform 0.3s ease;
-    }
-    .media-item:hover {
-      transform: scale(1.05);
+      width: 100%;
+      height: calc(100% - 28px);
+      object-fit: cover;
+      display: block;
+      /* image hover scaling disabled — the container handles hover now */
+      transition: none;
+      display: block;
     }
   </style>
 </head>
@@ -41,7 +70,7 @@
 
   <header class="container mx-auto flex justify-between items-center py-6 px-8 border-b border-black z-20 relative">
     <h1 class="heading-font text-2xl">
-      <a href="#" class="hover:underline">MY PORTFOLIO</a>
+      <a href="#" class="hover:underline">Loops.szn</a>
     </h1>
     <div class="flex gap-6 text-sm">
       <a href="portfolio.html" class="hover:underline">PORTFOLIO</a>
@@ -53,7 +82,7 @@
   <main class="relative flex flex-col items-center justify-center min-h-screen px-8 py-16">
     <div class="absolute inset-0 overflow-hidden z-0" id="media-grid"></div>
 
-    <div class="text-center z-10">
+    <div class="text-center z-20 pointer-events-none">
       <h2 class="heading-font text-6xl md:text-8xl lg:text-9xl mb-4 leading-none">CREATIVE</h2>
       <h2 class="heading-font text-6xl md:text-8xl lg:text-9xl mb-4 leading-none">CARGO</h2>
       <p class="text-lg md:text-xl font-light max-w-2xl mx-auto">
@@ -61,105 +90,198 @@
       </p>
     </div>
     
-    <div class="fixed bottom-8 left-8 p-4 bg-gray-100 bg-opacity-80 rounded-lg backdrop-blur-sm z-20 text-white dark:bg-black dark:bg-opacity-80">
+    <div class="fixed bottom-8 left-8 p-4 bg-gray-100 bg-opacity-80 rounded-lg backdrop-blur-sm z-20 text-black dark:bg-black dark:bg-opacity-80">
       <h3 class="heading-font text-xl mb-4">PROJECTS</h3>
       <ul class="space-y-2 text-sm">
-        <li class="project-item cursor-pointer hover:underline transition" data-project="projectA">01 — Project A</li>
-        <li class="project-item cursor-pointer hover:underline transition" data-project="projectB">02 — Project B</li>
-        <li class="project-item cursor-pointer hover:underline transition" data-project="projectC">03 — Project C</li>
+        <li class="project-item cursor-pointer hover:underline transition" data-project="sznX">01 — Szn X</li>
+        <li class="project-item cursor-pointer hover:underline transition" data-project="severance">02 — Severance</li>
+        <li class="project-item cursor-pointer hover:underline transition" data-project="ios26">03 — iOS 26</li>
+        <li class="project-item cursor-pointer hover:underline transition" data-project="yzyApp">04 — YZY App</li>
       </ul>
     </div>
   </main>
 
   <script>
-    const projects = {
-      projectA: [
-        { type: 'image', src: 'https://placehold.co/400x600/808080/fff/png?text=Project+A+Image+1', width: '250px', height: '350px' },
-        { type: 'image', src: 'https://placehold.co/600x400/808080/fff/png?text=Project+A+Image+2', width: '400px', height: '250px' },
-      ],
-      projectB: [
-        { type: 'image', src: 'https://placehold.co/500x300/404040/fff/png?text=Project+B+Image+1', width: '350px', height: '200px' },
-        { type: 'image', src: 'https://placehold.co/300x500/404040/fff/png?text=Project+B+Image+2', width: '200px', height: '350px' },
-        { type: 'image', src: 'https://placehold.co/400x400/404040/fff/png?text=Project+B+Image+3', width: '300px', height: '300px' },
-      ],
-      projectC: [
-        { type: 'image', src: 'https://placehold.co/700x450/606060/fff/png?text=Project+C+Image+1', width: '500px', height: '320px' },
-        { type: 'image', src: 'https://placehold.co/350x550/606060/fff/png?text=Project+C+Image+2', width: '250px', height: '400px' },
-      ]
-    };
+  /* Project data keyed by id used in UI (keeps URL links to portfolio sections) */
+  const projects = {
+    sznX: [
+      { type: 'image', src: 'https://placehold.co/400x600/808080/fff/png?text=Szn+X+1', width: '250px', height: '350px', link: 'portfolio.html#project-1' },
+      { type: 'image', src: 'https://placehold.co/600x400/808080/fff/png?text=Szn+X+2', width: '400px', height: '250px', link: 'portfolio.html#project-1' }
+    ],
+    severance: [
+      { type: 'image', src: 'https://placehold.co/500x300/404040/fff/png?text=Severance+1', width: '350px', height: '200px', link: 'portfolio.html#project-2' },
+      { type: 'image', src: 'https://placehold.co/300x500/404040/fff/png?text=Severance+2', width: '200px', height: '350px', link: 'portfolio.html#project-2' },
+      { type: 'image', src: 'https://placehold.co/400x400/404040/fff/png?text=Severance+3', width: '300px', height: '300px', link: 'portfolio.html#project-2' }
+    ],
+    ios26: [
+      { type: 'image', src: 'https://placehold.co/700x450/606060/fff/png?text=iOS26+1', width: '500px', height: '320px', link: 'portfolio.html#project-3' },
+      { type: 'image', src: 'https://placehold.co/350x550/606060/fff/png?text=iOS26+2', width: '250px', height: '400px', link: 'portfolio.html#project-3' }
+    ],
+    yzyApp: [
+      { type: 'image', src: 'https://placehold.co/600x400/707070/fff/png?text=YZY+App+1', width: '400px', height: '250px', link: 'portfolio.html#project-4' },
+      { type: 'image', src: 'https://placehold.co/400x600/707070/fff/png?text=YZY+App+2', width: '250px', height: '350px', link: 'portfolio.html#project-4' }
+    ]
+  };
 
-    const projectItems = document.querySelectorAll('.project-item');
-    const mediaGrid = document.getElementById('media-grid');
+  /* Friendly display names for titlebars */
+  const displayNames = {
+    sznX: 'Szn X',
+    severance: 'Severance',
+    ios26: 'iOS 26',
+    yzyApp: 'YZY App'
+  };
 
-    let activeMediaContainers = [];
+  const projectItems = document.querySelectorAll('.project-item');
+  const mediaGrid = document.getElementById('media-grid');
+  let activeMediaContainers = [];
+  let autoCycleInterval;
+  let userInteracted = false;
 
-    function clearMedia() {
-      activeMediaContainers.forEach(container => {
-        container.classList.remove('active');
-        container.classList.add('inactive');
-        setTimeout(() => container.remove(), 500);
-      });
-      activeMediaContainers = [];
+  function stopAutoCycle() {
+    if (!userInteracted) {
+      clearInterval(autoCycleInterval);
+      userInteracted = true;
     }
+  }
 
-    function generateMedia(project) {
-      clearMedia();
+  function clearMedia() {
+    activeMediaContainers.forEach(container => {
+      container.classList.remove('active');
+      container.classList.add('inactive');
+      setTimeout(() => container.remove(), 500);
+    });
+    activeMediaContainers = [];
+  }
 
-      const media = projects[project];
-      if (!media) return;
+  function generateMedia(project) {
+    const media = projects[project];
+    if (!media) return;
 
-      const bodyRect = document.body.getBoundingClientRect();
-      const headerHeight = document.querySelector('header').offsetHeight;
-      const projectListHeight = document.querySelector('.fixed').offsetHeight;
-      const padding = 50;
+    const bodyRect = document.body.getBoundingClientRect();
+    const headerHeight = document.querySelector('header').offsetHeight;
+    const projectListHeight = document.querySelector('.fixed').offsetHeight;
+    const padding = 50;
 
-      media.forEach(item => {
-        const container = document.createElement('div');
-        container.className = 'media-container';
-        container.style.width = item.width;
-        container.style.height = item.height;
+    // Fade out old windows
+    activeMediaContainers.forEach((container, i) => {
+      container.classList.remove('active');
+      container.classList.add('inactive');
+      setTimeout(() => container.remove(), 400 + i*50); // stagger removal
+    });
+    activeMediaContainers = [];
 
-        let left = Math.random() * (bodyRect.width - parseInt(item.width) - (padding * 2)) + padding;
-        let top = Math.random() * (bodyRect.height - parseInt(item.height) - headerHeight - projectListHeight - (padding * 2)) + headerHeight + padding;
-        
-        container.style.left = `${left}px`;
-        container.style.top = `${top}px`;
+    // Fade in new windows
+    media.forEach((item, i) => {
+      const container = document.createElement('div');
+      container.className = 'media-container inactive';
+      container.style.width = item.width;
+      container.style.height = item.height;
 
-        if (item.type === 'image') {
-          const img = document.createElement('img');
-          img.src = item.src;
-          img.alt = '';
-          img.className = 'media-item w-full h-full object-cover';
-          container.appendChild(img);
-        } else if (item.type === 'video') {
-          const video = document.createElement('video');
-          video.src = item.src;
-          video.autoplay = true;
-          video.loop = true;
-          video.muted = true;
-          video.className = 'media-item w-full h-full object-cover';
-          container.appendChild(video);
+      let left = Math.random() * (bodyRect.width - parseInt(item.width) - (padding*2)) + padding;
+      let top = Math.random() * (bodyRect.height - parseInt(item.height) - headerHeight - projectListHeight - (padding*2)) + headerHeight + padding;
+      container.style.left = `${left}px`;
+      container.style.top = `${top}px`;
+
+      const titlebar = document.createElement('div');
+      titlebar.className = 'media-titlebar';
+      titlebar.innerText = (displayNames[project] || project).toUpperCase();
+      container.appendChild(titlebar);
+
+      let content;
+      if (item.type === 'image') {
+        content = document.createElement('img');
+        content.src = item.src;
+        content.className = 'media-item';
+        content.addEventListener('click', (e) => {
+          e.stopPropagation();
+          window.location.href = item.link;
+        });
+      } else if (item.type === 'video') {
+        content = document.createElement('video');
+        content.src = item.src;
+        content.autoplay = true;
+        content.loop = true;
+        content.muted = true;
+        content.className = 'media-item';
+        content.addEventListener('click', (e) => {
+          e.stopPropagation();
+          window.location.href = item.link;
+        });
+      }
+      container.appendChild(content);
+
+      // Hover effects on the whole window
+      container.addEventListener('mouseenter', () => {
+        container.classList.add('hovered');
+        stopAutoCycle();
+      });
+      container.addEventListener('mouseleave', () => {
+        container.classList.remove('hovered');
+      });
+
+      // Dragging
+      let isDragging = false;
+      let offsetX, offsetY;
+
+      container.addEventListener('mousedown', (e) => {
+        stopAutoCycle();
+        isDragging = true;
+        offsetX = e.clientX - container.offsetLeft;
+        offsetY = e.clientY - container.offsetTop;
+        container.classList.add('dragging');
+
+        function onMouseMove(e) {
+          container.style.left = `${e.clientX - offsetX}px`;
+          container.style.top = `${e.clientY - offsetY}px`;
         }
 
-        mediaGrid.appendChild(container);
-        activeMediaContainers.push(container);
+        function onMouseUp(e) {
+          isDragging = false;
+          container.classList.remove('dragging');
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+        }
 
-        setTimeout(() => container.classList.add('active'), 10);
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
       });
-    }
 
-    projectItems.forEach(item => {
-      item.addEventListener('click', () => {
-        const project = item.dataset.project;
-        generateMedia(project);
-        projectItems.forEach(i => i.classList.remove('font-bold'));
-        item.classList.add('font-bold');
-      });
+      mediaGrid.appendChild(container);
+      activeMediaContainers.push(container);
+
+      // Slight stagger for smoother OS-like animation
+      setTimeout(() => container.classList.add('active'), 100 + i*80);
     });
-    
-    // Initial content load (optional)
-    generateMedia('projectA');
-    document.querySelector('.project-item[data-project="projectA"]').classList.add('font-bold');
+  }
+
+
+  // Project menu clicks
+  projectItems.forEach(item => {
+    item.addEventListener('click', () => {
+      stopAutoCycle();
+      const project = item.dataset.project;
+      generateMedia(project);
+      projectItems.forEach(i => i.classList.remove('font-bold'));
+      item.classList.add('font-bold');
+    });
+  });
+
+  // Auto cycle
+  const projectKeys = Object.keys(projects);
+  let cycleIndex = 0;
+  autoCycleInterval = setInterval(() => {
+    if (!userInteracted) {
+      const project = projectKeys[cycleIndex % projectKeys.length];
+      generateMedia(project);
+      cycleIndex++;
+    }
+  }, 3000);
+
+  // Initial load
+  generateMedia('sznX');
+  const initial = document.querySelector('.project-item[data-project="sznX"]');
+  if (initial) initial.classList.add('font-bold');
   </script>
+
 </body>
 </html>
