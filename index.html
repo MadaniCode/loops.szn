@@ -7,126 +7,224 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css">
   <style>
-    /* Inline overrides for landing page windows (keeps behavior local and predictable) */
+    /* Window styles */
     .media-container {
       position: absolute;
       border: 1px solid black;
       background: white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1), inset 0 -2px 4px rgba(0,0,0,0.05);
-      border-radius: 0;
+      border-radius: 2px;
       opacity: 0;
       transform: scale(0.95);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
                   opacity 0.35s ease,
-                  box-shadow 0.2s ease;
-      z-index: 10;
+                  box-shadow 0.25s ease;
+      z-index: 10;  
       cursor: pointer;
-      pointer-events: none; /* default inactive */
+      pointer-events: none;
       overflow: hidden;
     }
-
     .media-container.active {
       opacity: 1;
       transform: scale(1);
       pointer-events: auto;
-      z-index: 50; /* in front of CREATIVE CARGO text */
+      z-index: 50;
     }
-
-    /* Hover applies to the whole window now */
-    .media-container.hovered {
-      box-shadow: 0 12px 30px rgba(0,0,0,0.28), inset 0 -2px 4px rgba(0,0,0,0.05);
-      z-index: 70; /* highest on hover */
-      transform: scale(1.02);
-    }
-
-    .media-container.dragging {
-      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-      z-index: 80; /* front when dragging */
-    }
-
     .media-titlebar {
-      background: linear-gradient(to bottom, #222, #111);
+      background: #111;
       color: white;
       font-size: 12px;
       padding: 4px 8px;
-      font-family: "Cooper Black", serif;
+      font-family: "Courier New", monospace;
       border-bottom: 1px solid black;
       user-select: none;
       text-transform: uppercase;
     }
-
     .media-item {
       width: 100%;
       height: calc(100% - 28px);
       object-fit: cover;
       display: block;
-      /* image hover scaling disabled — the container handles hover now */
       transition: none;
-      display: block;
+    }
+    .fixed ul li,
+    .fixed h3 {
+      color: white;
+      font-family: monospace;
+    }
+
+    /* Intro overlay */
+    #intro-overlay {
+      position: fixed;
+      inset: 0;
+      background: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    #intro-window {
+      position: relative;
+      width: 320px;
+      height: 120px;
+      border: 1px solid black;
+      background: white;
+      border-radius: 2px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      opacity: 0;
+      transform: scale(0.95);
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+    #intro-window.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+    #intro-window.minimised {
+      transform: scale(0.2);
+      opacity: 0;
+    }
+    #intro-titlebar {
+      background: #111;
+      color: white;
+      font-size: 12px;
+      padding: 4px 8px;
+      font-family: "Courier New", monospace;
+      border-bottom: 1px solid black;
+      text-transform: uppercase;
+    }
+    #intro-text {
+      font-family: "Courier New", monospace;
+      font-size: 16px;
+      padding: 16px;
+      white-space: pre;
     }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-900 transition-colors duration-500 overflow-hidden">
 
-  <header class="container mx-auto flex justify-between items-center py-6 px-8 border-b border-black z-20 relative">
+  <!-- INTRO -->
+  <div id="intro-overlay">
+    <div id="intro-window">
+      <div id="intro-titlebar">LOOPS.SZN</div>
+      <div id="intro-text"></div>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <header class="container mx-auto flex justify-between items-center py-6 px-4 border-b border-black relative z-20 opacity-0 transition-opacity duration-700" id="site-header">
     <h1 class="heading-font text-2xl">
       <a href="#" class="hover:underline">Loops.szn</a>
     </h1>
-    <div class="flex gap-6 text-sm">
+    <nav class="hidden md:flex gap-6 text-sm">
       <a href="portfolio.html" class="hover:underline">PORTFOLIO</a>
       <button class="hover:underline">PROFILE</button>
       <button class="hover:underline">CV</button>
+    </nav>
+    <div class="md:hidden flex items-center">
+      <button id="menu-toggle" class="focus:outline-none">
+        <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <div id="mobile-menu" class="hidden absolute right-4 top-full mt-2 w-40 bg-white border border-black rounded shadow-lg z-50 flex flex-col">
+      <a href="portfolio.html" class="px-4 py-2 hover:bg-gray-200 border-b border-gray-100">PORTFOLIO</a>
+      <button class="px-4 py-2 hover:bg-gray-200 border-b border-gray-100">PROFILE</button>
+      <button class="px-4 py-2 hover:bg-gray-200">CV</button>
     </div>
   </header>
 
-  <main class="relative flex flex-col items-center justify-center min-h-screen px-8 py-16">
+  <main class="relative flex flex-col items-center justify-center min-h-screen px-8 py-16 opacity-0 transition-opacity duration-700" id="site-main">
     <div class="absolute inset-0 overflow-hidden z-0" id="media-grid"></div>
-
-    <div class="text-center z-20 pointer-events-none">
-      <h2 class="heading-font text-6xl md:text-8xl lg:text-9xl mb-4 leading-none">CREATIVE</h2>
-      <h2 class="heading-font text-6xl md:text-8xl lg:text-9xl mb-4 leading-none">CARGO</h2>
-      <p class="text-lg md:text-xl font-light max-w-2xl mx-auto">
-        Curating digital experiences with a focus on bold design and compelling narratives.
-      </p>
-    </div>
-    
-    <div class="fixed bottom-8 left-8 p-4 bg-gray-100 bg-opacity-80 rounded-lg backdrop-blur-sm z-20 text-black dark:bg-black dark:bg-opacity-80">
+    <div class="fixed bottom-8 left-8 p-4 bg-black bg-opacity-90 rounded-lg backdrop-blur-sm z-20">
       <h3 class="heading-font text-xl mb-4">PROJECTS</h3>
       <ul class="space-y-2 text-sm">
         <li class="project-item cursor-pointer hover:underline transition" data-project="sznX">01 — Szn X</li>
-        <li class="project-item cursor-pointer hover:underline transition" data-project="severance">02 — Severance</li>
         <li class="project-item cursor-pointer hover:underline transition" data-project="ios26">03 — iOS 26</li>
         <li class="project-item cursor-pointer hover:underline transition" data-project="yzyApp">04 — YZY App</li>
       </ul>
     </div>
   </main>
 
-  <script>
-  /* Project data keyed by id used in UI (keeps URL links to portfolio sections) */
+<script>
+  // Intro typing animation
+  const introOverlay = document.getElementById('intro-overlay');
+  const introWindow = document.getElementById('intro-window');
+  const introText = document.getElementById('intro-text');
+  const siteHeader = document.getElementById('site-header');
+  const siteMain = document.getElementById('site-main');
+  let introDone = false;
+
+  function typeWriter(text, element, speed, callback) {
+    let i = 0;
+    function typing() {
+      if (i < text.length) {
+        element.textContent += text.charAt(i);
+        i++;
+        setTimeout(typing, speed);
+      } else {
+        callback && callback();
+      }
+    }
+    typing();
+  }
+
+  function finishIntro(skip=false) {
+    if (introDone) return;
+    introDone = true;
+    introWindow.classList.add('minimised');
+    setTimeout(() => {
+      introOverlay.remove();
+      siteHeader.classList.remove('opacity-0');
+      siteMain.classList.remove('opacity-0');
+    }, skip ? 0 : 400);
+  }
+
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      introWindow.classList.add('active');
+      typeWriter("Welcome to loops.szn", introText, 50, () => {
+        setTimeout(() => finishIntro(false), 400);
+      });
+    }, 100);
+  });
+
+  // Skip intro on click or key
+  introOverlay.addEventListener('click', () => finishIntro(true));
+  window.addEventListener('keydown', () => finishIntro(true));
+
+  // --- existing site JS below ---
+  const menuToggle = document.getElementById('menu-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+  menuToggle.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
+  document.addEventListener('click', (e) => {
+    if (!mobileMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+      mobileMenu.classList.add('hidden');
+    }
+  });
+
+  // Define projects
   const projects = {
     sznX: [
-      { type: 'image', src: 'https://placehold.co/400x600/808080/fff/png?text=Szn+X+1', width: '250px', height: '350px', link: 'portfolio.html#project-1' },
-      { type: 'image', src: 'https://placehold.co/600x400/808080/fff/png?text=Szn+X+2', width: '400px', height: '250px', link: 'portfolio.html#project-1' }
-    ],
-    severance: [
-      { type: 'image', src: 'https://placehold.co/500x300/404040/fff/png?text=Severance+1', width: '350px', height: '200px', link: 'portfolio.html#project-2' },
-      { type: 'image', src: 'https://placehold.co/300x500/404040/fff/png?text=Severance+2', width: '200px', height: '350px', link: 'portfolio.html#project-2' },
-      { type: 'image', src: 'https://placehold.co/400x400/404040/fff/png?text=Severance+3', width: '300px', height: '300px', link: 'portfolio.html#project-2' }
+      { type: 'image', src: 'sznxgif1.gif', width: '400px', height: '250px', link: 'portfolio.html#project-1' },
+      { type: 'image', src: 'sznxgif2.gif', width: '350px', height: '300px', link: 'portfolio.html#project-1' },
+      { type: 'image', src: 'sznxgif3.gif', width: '500px', height: '300px', link: 'portfolio.html#project-1' }
     ],
     ios26: [
-      { type: 'image', src: 'https://placehold.co/700x450/606060/fff/png?text=iOS26+1', width: '500px', height: '320px', link: 'portfolio.html#project-3' },
-      { type: 'image', src: 'https://placehold.co/350x550/606060/fff/png?text=iOS26+2', width: '250px', height: '400px', link: 'portfolio.html#project-3' }
+      { type: 'image', src: 'iosgif1.gif', width: '600px', height: '338px', link: 'portfolio.html#project-3' },
+      { type: 'image', src: 'iosgif2.gif', width: '250px', height: '400px', link: 'portfolio.html#project-3' }
     ],
     yzyApp: [
-      { type: 'image', src: 'https://placehold.co/600x400/707070/fff/png?text=YZY+App+1', width: '400px', height: '250px', link: 'portfolio.html#project-4' },
-      { type: 'image', src: 'https://placehold.co/400x600/707070/fff/png?text=YZY+App+2', width: '250px', height: '350px', link: 'portfolio.html#project-4' }
+      { type: 'image', src: 'yzyappgif1.gif', width: '400px', height: '250px', link: 'portfolio.html#project-4' },
+      { type: 'image', src: 'yzyappgif2.gif', width: '350px', height: '300px', link: 'portfolio.html#project-4' },
+      { type: 'image', src: 'yzyappgif3.gif', width: '500px', height: '300px', link: 'portfolio.html#project-4' }
     ]
   };
 
-  /* Friendly display names for titlebars */
   const displayNames = {
     sznX: 'Szn X',
-    severance: 'Severance',
     ios26: 'iOS 26',
     yzyApp: 'YZY App'
   };
@@ -136,6 +234,7 @@
   let activeMediaContainers = [];
   let autoCycleInterval;
   let userInteracted = false;
+  let zIndexCounter = 50;
 
   function stopAutoCycle() {
     if (!userInteracted) {
@@ -144,118 +243,121 @@
     }
   }
 
-  function clearMedia() {
-    activeMediaContainers.forEach(container => {
-      container.classList.remove('active');
-      container.classList.add('inactive');
-      setTimeout(() => container.remove(), 500);
-    });
-    activeMediaContainers = [];
+  function createMediaElement(item) {
+    let element;
+    if (item.type === 'image') {
+      element = document.createElement('img');
+      element.className = 'media-item';
+      element.loading = 'lazy';
+      element.dataset.src = item.src;
+      element.addEventListener('click', e => {
+        e.stopPropagation();
+        window.location.href = item.link;
+      });
+    } else if (item.type === 'video') {
+      element = document.createElement('video');
+      element.className = 'media-item';
+      element.autoplay = true;
+      element.loop = true;
+      element.muted = true;
+      element.playsInline = true;
+      element.dataset.src = item.src;
+      element.addEventListener('click', e => {
+        e.stopPropagation();
+        window.location.href = item.link;
+      });
+    }
+    return element;
   }
 
   function generateMedia(project) {
     const media = projects[project];
     if (!media) return;
-
     const bodyRect = document.body.getBoundingClientRect();
     const headerHeight = document.querySelector('header').offsetHeight;
     const projectListHeight = document.querySelector('.fixed').offsetHeight;
     const padding = 50;
 
-    // Fade out old windows
     activeMediaContainers.forEach((container, i) => {
       container.classList.remove('active');
       container.classList.add('inactive');
-      setTimeout(() => container.remove(), 400 + i*50); // stagger removal
+      setTimeout(() => container.remove(), 400 + i * 50);
     });
     activeMediaContainers = [];
+    zIndexCounter = 50;
 
-    // Fade in new windows
     media.forEach((item, i) => {
       const container = document.createElement('div');
       container.className = 'media-container inactive';
       container.style.width = item.width;
       container.style.height = item.height;
 
-      let left = Math.random() * (bodyRect.width - parseInt(item.width) - (padding*2)) + padding;
-      let top = Math.random() * (bodyRect.height - parseInt(item.height) - headerHeight - projectListHeight - (padding*2)) + headerHeight + padding;
+      let left, top, attempts = 0, maxAttempts = 20;
+      const width = parseInt(item.width), height = parseInt(item.height);
+      do {
+        left = Math.random() * (bodyRect.width - width - padding*2) + padding;
+        top = Math.random() * (bodyRect.height - height - headerHeight - projectListHeight - padding*2) + headerHeight + padding;
+        attempts++;
+      } while (
+        activeMediaContainers.some(c => {
+          const rect = c.getBoundingClientRect();
+          const overlapX = Math.abs(rect.left - left) < width * 0.6;
+          const overlapY = Math.abs(rect.top - top) < height * 0.6;
+          return overlapX && overlapY;
+        }) && attempts < maxAttempts
+      );
+
       container.style.left = `${left}px`;
       container.style.top = `${top}px`;
+      container.style.zIndex = zIndexCounter++;
 
       const titlebar = document.createElement('div');
       titlebar.className = 'media-titlebar';
       titlebar.innerText = (displayNames[project] || project).toUpperCase();
       container.appendChild(titlebar);
 
-      let content;
-      if (item.type === 'image') {
-        content = document.createElement('img');
-        content.src = item.src;
-        content.className = 'media-item';
-        content.addEventListener('click', (e) => {
-          e.stopPropagation();
-          window.location.href = item.link;
-        });
-      } else if (item.type === 'video') {
-        content = document.createElement('video');
-        content.src = item.src;
-        content.autoplay = true;
-        content.loop = true;
-        content.muted = true;
-        content.className = 'media-item';
-        content.addEventListener('click', (e) => {
-          e.stopPropagation();
-          window.location.href = item.link;
-        });
-      }
+      const content = createMediaElement(item);
       container.appendChild(content);
+      setTimeout(() => content.src = content.dataset.src, 50 + i * 50);
 
-      // Hover effects on the whole window
       container.addEventListener('mouseenter', () => {
         container.classList.add('hovered');
         stopAutoCycle();
+        container.style.zIndex = zIndexCounter++;
       });
       container.addEventListener('mouseleave', () => {
         container.classList.remove('hovered');
       });
 
-      // Dragging
-      let isDragging = false;
-      let offsetX, offsetY;
+      if (!('ontouchstart' in window)) {
+        let offsetX, offsetY;
+        container.addEventListener('mousedown', e => {
+          stopAutoCycle();
+          offsetX = e.clientX - container.offsetLeft;
+          offsetY = e.clientY - container.offsetTop;
+          container.classList.add('dragging');
+          container.style.zIndex = zIndexCounter++;
 
-      container.addEventListener('mousedown', (e) => {
-        stopAutoCycle();
-        isDragging = true;
-        offsetX = e.clientX - container.offsetLeft;
-        offsetY = e.clientY - container.offsetTop;
-        container.classList.add('dragging');
-
-        function onMouseMove(e) {
-          container.style.left = `${e.clientX - offsetX}px`;
-          container.style.top = `${e.clientY - offsetY}px`;
-        }
-
-        function onMouseUp(e) {
-          isDragging = false;
-          container.classList.remove('dragging');
-          document.removeEventListener('mousemove', onMouseMove);
-          document.removeEventListener('mouseup', onMouseUp);
-        }
-
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-      });
+          function onMouseMove(e) {
+            container.style.left = `${e.clientX - offsetX}px`;
+            container.style.top = `${e.clientY - offsetY}px`;
+          }
+          function onMouseUp() {
+            container.classList.remove('dragging');
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+          }
+          document.addEventListener('mousemove', onMouseMove);
+          document.addEventListener('mouseup', onMouseUp);
+        });
+      }
 
       mediaGrid.appendChild(container);
       activeMediaContainers.push(container);
-
-      // Slight stagger for smoother OS-like animation
-      setTimeout(() => container.classList.add('active'), 100 + i*80);
+      setTimeout(() => container.classList.add('active'), 100 + i * 80);
     });
   }
 
-
-  // Project menu clicks
   projectItems.forEach(item => {
     item.addEventListener('click', () => {
       stopAutoCycle();
@@ -266,7 +368,6 @@
     });
   });
 
-  // Auto cycle
   const projectKeys = Object.keys(projects);
   let cycleIndex = 0;
   autoCycleInterval = setInterval(() => {
@@ -277,11 +378,8 @@
     }
   }, 3000);
 
-  // Initial load
   generateMedia('sznX');
-  const initial = document.querySelector('.project-item[data-project="sznX"]');
-  if (initial) initial.classList.add('font-bold');
-  </script>
-
+  document.querySelector('.project-item[data-project="sznX"]').classList.add('font-bold');
+</script>
 </body>
 </html>

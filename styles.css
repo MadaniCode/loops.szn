@@ -14,7 +14,6 @@ h1, h2, h3, h4, h5, h6,
   font-family: 'Cooper Black', serif;
 }
 
-
 /* ------------------------------------
    Theme
 ------------------------------------ */
@@ -23,33 +22,34 @@ h1, h2, h3, h4, h5, h6,
   color: #eee;
 }
 
-/* Shared Utilities */
 html {
   scroll-behavior: smooth;
 }
 
 /* ------------------------------------
    GLOBAL MEDIA WINDOW STYLES
-   Used by both index and portfolio pages.
 ------------------------------------ */
 .media-container {
   position: absolute;
   border: 1px solid #000;
   background: #fff;
-  border-radius: 0; /* sharp corners like OS windows */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1), inset 0 -2px 4px rgba(0,0,0,0.05);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+  border-radius: 2px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1),
               opacity 0.35s ease,
-              box-shadow 0.2s ease;
+              box-shadow 0.25s ease;
   cursor: pointer;
   z-index: 1;
   overflow: hidden;
   opacity: 0;
   transform: scale(0.95) translateY(10px);
-  pointer-events: none; /* inactive by default */
+  pointer-events: none;
+
+  /* Flexbox layout for titlebar + content */
+  display: flex;
+  flex-direction: column;
 }
 
-/* active / visible state */
 .media-container.active {
   opacity: 1;
   pointer-events: auto;
@@ -57,59 +57,55 @@ html {
   z-index: 50;
 }
 
-/* explicitly inactive (used when transitioning out) */
 .media-container.inactive {
   opacity: 0;
   transform: scale(0.95) translateY(10px);
   pointer-events: none;
 }
 
-/* Hover applies to the entire window */
 .media-container.hovered {
-  box-shadow: 0 12px 30px rgba(0,0,0,0.28), inset 0 -2px 4px rgba(0,0,0,0.05);
-  transform: scale(1.02);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.25);
   z-index: 70;
 }
 
-/* dragging state */
 .media-container.dragging {
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.35);
   z-index: 80;
   cursor: grabbing;
 }
 
-/* titlebar */
 .media-titlebar {
-  background: linear-gradient(to bottom, #222, #111);
+  background: #111;
   color: white;
   font-size: 12px;
   padding: 4px 8px;
-  font-family: "Cooper Black", serif;
+  font-family: "Courier New", monospace;
   border-bottom: 1px solid black;
   text-transform: uppercase;
   user-select: none;
+
+  /* Fix height to content */
+  flex: 0 0 auto;
 }
 
-/* image/video content — image-only hover scaling disabled */
 .media-item {
+  flex: 1 1 auto;
   width: 100%;
-  height: calc(100% - 28px); /* accounts for titlebar height */
+  height: 100%;
   object-fit: cover;
   display: block;
   transition: none;
   box-shadow: none;
 }
 
-/* small helper for when a window is being dragged */
 .dragging {
   opacity: 0.95;
 }
 
 /* ------------------------------------
-   INDEX PAGE (specific niceties)
+   INDEX PAGE
 ------------------------------------ */
 #media-grid {
-  /* ensures the grid area sits behind heading text (heading has z-20) */
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -125,16 +121,15 @@ html {
   height: 100vh;
   overflow-y: auto;
 }
+
 .preview-animate {
   transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
-/* card shadows used in portfolio previews */
 img.shadow {
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
 
-/* original small hover used for portfolio static images (kept) */
 img:hover.shadow-lg {
   box-shadow: 0 10px 28px rgba(0,0,0,0.12);
 }
