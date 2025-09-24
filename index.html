@@ -7,7 +7,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css">
   <style>
-    /* Window styles */
+    /* ----------------------------
+       Window styles
+    ----------------------------- */
     .media-container {
       position: absolute;
       border: 1px solid black;
@@ -53,7 +55,9 @@
       font-family: monospace;
     }
 
-    /* Intro overlay */
+    /* ----------------------------
+       Intro overlay
+    ----------------------------- */
     #intro-overlay {
       position: fixed;
       inset: 0;
@@ -99,9 +103,27 @@
       padding: 16px;
       white-space: pre;
     }
+
+    /* ----------------------------
+       Parallax Grid Background
+    ----------------------------- */
+    #parallax-grid {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: -1;
+      will-change: transform;
+      transition: transform 0.1s linear;
+    }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-900 transition-colors duration-500 overflow-hidden">
+
+  <!-- PARALLAX GRID BACKGROUND -->
+  <div id="parallax-grid"></div>
 
   <!-- INTRO -->
   <div id="intro-overlay">
@@ -113,7 +135,7 @@
 
   <!-- NAVBAR -->
   <header class="container mx-auto flex justify-between items-center py-6 px-4 border-b border-black relative z-20 opacity-0 transition-opacity duration-700" id="site-header">
-    <h1 class="heading-font text-2xl">
+    <h1 class="text-2xl font-semibold">
       <a href="#" class="hover:underline">Loops.szn</a>
     </h1>
     <nav class="hidden md:flex gap-6 text-sm">
@@ -137,7 +159,7 @@
   <main class="relative flex flex-col items-center justify-center min-h-screen px-8 py-16 opacity-0 transition-opacity duration-700" id="site-main">
     <div class="absolute inset-0 overflow-hidden z-0" id="media-grid"></div>
     <div class="fixed bottom-8 left-8 p-4 bg-black bg-opacity-90 rounded-lg backdrop-blur-sm z-20">
-      <h3 class="heading-font text-xl mb-4">PROJECTS</h3>
+      <h3 class="text-xl font-semibold mb-4">PROJECTS</h3>
       <ul class="space-y-2 text-sm">
         <li class="project-item cursor-pointer hover:underline transition" data-project="sznX">01 — Szn X</li>
         <li class="project-item cursor-pointer hover:underline transition" data-project="ios26">03 — iOS 26</li>
@@ -147,7 +169,9 @@
   </main>
 
 <script>
+  // -----------------------------
   // Intro typing animation
+  // -----------------------------
   const introOverlay = document.getElementById('intro-overlay');
   const introWindow = document.getElementById('intro-window');
   const introText = document.getElementById('intro-text');
@@ -180,20 +204,46 @@
     }, skip ? 0 : 400);
   }
 
-  window.addEventListener('load', () => {
+  function playIntro() {
     setTimeout(() => {
       introWindow.classList.add('active');
       typeWriter("Welcome to loops.szn", introText, 50, () => {
         setTimeout(() => finishIntro(false), 400);
       });
     }, 100);
+  }
+
+  // Visit counter
+  let visitCount = parseInt(localStorage.getItem("visitCount") || "0", 10);
+  visitCount++;
+  localStorage.setItem("visitCount", visitCount);
+
+  window.addEventListener('load', () => {
+    if (visitCount === 1 || visitCount % 3 === 0) {
+      playIntro();
+    } else {
+      finishIntro(true);
+    }
   });
 
   // Skip intro on click or key
   introOverlay.addEventListener('click', () => finishIntro(true));
   window.addEventListener('keydown', () => finishIntro(true));
 
-  // --- existing site JS below ---
+  // -----------------------------
+  // Parallax grid movement
+  // -----------------------------
+  const grid = document.getElementById('parallax-grid');
+  document.addEventListener('mousemove', e => {
+    const { innerWidth, innerHeight } = window;
+    const x = (e.clientX / innerWidth - 0.5) * 20;
+    const y = (e.clientY / innerHeight - 0.5) * 20;
+    grid.style.transform = `translate(${x}px, ${y}px)`;
+  });
+
+  // -----------------------------
+  // Existing site JS
+  // -----------------------------
   const menuToggle = document.getElementById('menu-toggle');
   const mobileMenu = document.getElementById('mobile-menu');
   menuToggle.addEventListener('click', () => {
@@ -205,7 +255,7 @@
     }
   });
 
-  // Define projects
+  // Projects data
   const projects = {
     sznX: [
       { type: 'image', src: 'sznxgif1.gif', width: '400px', height: '250px', link: 'portfolio.html#project-1' },
