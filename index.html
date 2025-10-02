@@ -21,7 +21,7 @@
       transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
                   opacity 0.35s ease,
                   box-shadow 0.25s ease;
-      z-index: 10;  
+      z-index: 10;
       cursor: pointer;
       pointer-events: none;
       overflow: hidden;
@@ -54,6 +54,90 @@
       color: white;
       font-family: monospace;
     }
+
+    /* ----------------------------
+       Profile Window Styles
+    ----------------------------- */
+    #profile-window {
+      position: absolute;
+      width: 450px; /* Adjusted size */
+      background: white;
+      border: 1px solid black;
+      border-radius: 2px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      opacity: 0;
+      transform: scale(0.98);
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+      z-index: 100; /* High z-index */
+      overflow: hidden;
+    }
+    #profile-window.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+    #profile-titlebar {
+      background: #111;
+      color: white;
+      font-size: 12px;
+      padding: 4px 8px;
+      font-family: "Courier New", monospace;
+      border-bottom: 1px solid black;
+      text-transform: uppercase;
+      user-select: none;
+      cursor: grab;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #profile-controls {
+      display: flex;
+      gap: 6px;
+    }
+    #profile-controls button {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: "Courier New", monospace;
+      width: 18px;
+      height: 18px;
+      line-height: 1;
+      text-align: center;
+      padding: 0;
+    }
+    #profile-controls button:hover {
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+    }
+    #profile-content {
+      display: flex;
+      padding: 20px;
+      gap: 20px;
+      font-family: "Courier New", monospace;
+      font-size: 14px;
+      line-height: 1.4;
+      /* Add transition for smooth minimize/maximize */
+      transition: height 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+    }
+    #profile-content.hidden {
+      height: 0;
+      padding: 0 20px;
+      opacity: 0;
+      /* Ensure the height is effectively zero when hidden */
+      margin: 0; 
+      visibility: hidden; 
+    }
+    #profile-content img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border: 1px solid #ddd;
+    }
+    #profile-description {
+      flex: 1;
+    }
+
 
     /* ----------------------------
        Intro overlay
@@ -110,7 +194,7 @@
     #parallax-grid {
       position: fixed;
       inset: 0;
-      background-image: 
+      background-image:
         linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
       background-size: 40px 40px;
@@ -122,10 +206,8 @@
 </head>
 <body class="bg-gray-100 text-gray-900 transition-colors duration-500 overflow-hidden">
 
-  <!-- PARALLAX GRID BACKGROUND -->
   <div id="parallax-grid"></div>
 
-  <!-- INTRO -->
   <div id="intro-overlay">
     <div id="intro-window">
       <div id="intro-titlebar">LOOPS.SZN</div>
@@ -133,15 +215,13 @@
     </div>
   </div>
 
-  <!-- NAVBAR -->
   <header class="container mx-auto flex justify-between items-center py-6 px-4 border-b border-black relative z-20 opacity-0 transition-opacity duration-700" id="site-header">
     <h1 class="text-2xl font-semibold">
       <a href="#" class="hover:underline">Loops.szn</a>
     </h1>
     <nav class="hidden md:flex gap-6 text-sm">
       <a href="portfolio.html" class="hover:underline">PORTFOLIO</a>
-      <button class="hover:underline">PROFILE</button>
-      <button class="hover:underline">CV</button>
+      <button id="profile-btn" class="hover:underline">PROFILE</button>
     </nav>
     <div class="md:hidden flex items-center">
       <button id="menu-toggle" class="focus:outline-none">
@@ -151,14 +231,14 @@
     </div>
     <div id="mobile-menu" class="hidden absolute right-4 top-full mt-2 w-40 bg-white border border-black rounded shadow-lg z-50 flex flex-col">
       <a href="portfolio.html" class="px-4 py-2 hover:bg-gray-200 border-b border-gray-100">PORTFOLIO</a>
-      <button class="px-4 py-2 hover:bg-gray-200 border-b border-gray-100">PROFILE</button>
+      <button id="mobile-profile-btn" class="px-4 py-2 hover:bg-gray-200 border-b border-gray-100">PROFILE</button>
       <button class="px-4 py-2 hover:bg-gray-200">CV</button>
     </div>
   </header>
 
   <main class="relative flex flex-col items-center justify-center min-h-screen px-8 py-16 opacity-0 transition-opacity duration-700" id="site-main">
     <div class="absolute inset-0 overflow-hidden z-0" id="media-grid"></div>
-    <div class="fixed bottom-8 left-8 p-4 bg-black bg-opacity-90 rounded-lg backdrop-blur-sm z-20">
+    <div class="fixed bottom-8 left-8 p-4 bg-black bg-opacity-90 rounded-lg backdrop-blur-sm z-20 fixed">
       <h3 class="text-xl font-semibold mb-4">PROJECTS</h3>
       <ul class="space-y-2 text-sm">
         <li class="project-item cursor-pointer hover:underline transition" data-project="sznX">01 — Szn X</li>
@@ -325,7 +405,9 @@
     if (!media) return;
     const bodyRect = document.body.getBoundingClientRect();
     const headerHeight = document.querySelector('header').offsetHeight;
-    const projectListHeight = document.querySelector('.fixed').offsetHeight;
+    // Safely get height of the fixed project list
+    const fixedElement = document.querySelector('.fixed');
+    const projectListHeight = fixedElement ? fixedElement.offsetHeight : 0;
     const padding = 50;
 
     activeMediaContainers.forEach((container, i) => {
@@ -430,6 +512,113 @@
 
   generateMedia('sznX');
   document.querySelector('.project-item[data-project="sznX"]').classList.add('font-bold');
+
+
+  // -----------------------------
+  // Profile Window Logic
+  // -----------------------------
+  const profileButton = document.getElementById('profile-btn');
+  const mobileProfileButton = document.getElementById('mobile-profile-btn');
+  let profileWindow = null;
+
+  function createProfileWindow() {
+    if (profileWindow) {
+        // If window already exists, bring it to the front
+        profileWindow.style.zIndex = zIndexCounter++;
+        return;
+    }
+
+    profileWindow = document.createElement('div');
+    profileWindow.id = 'profile-window';
+    profileWindow.style.zIndex = zIndexCounter++; // Set initial z-index
+
+    const titlebar = document.createElement('div');
+    titlebar.id = 'profile-titlebar';
+    titlebar.innerHTML = `
+      <span>PROFILE</span>
+      <div id="profile-controls">
+        <button id="profile-minimise">–</button>
+        <button id="profile-close">×</button>
+      </div>
+    `;
+        const content = document.createElement('div');
+        content.id = 'profile-content';
+        // UPDATED CONTENT HERE
+     content.innerHTML = `
+          <img src="portrait.jpg" alt="Portrait">
+          <div id="profile-description">
+          <h2 class="text-lg font-bold mb-2">Loops.szn</h2>
+          <p>Loops.szn is a motion designer with extensive experience, including work on the YZY App. He crafts fluid, impactful animations that merge technical skill with creative vision.</p>
+          <br> <p>Always in beta. Always in loops.</p>
+          </div>
+        `;
+
+    profileWindow.appendChild(titlebar);
+    profileWindow.appendChild(content);
+    document.body.appendChild(profileWindow);
+
+    // Center on screen once its size is calculated
+    const { innerWidth, innerHeight } = window;
+    profileWindow.style.left = `${(innerWidth - profileWindow.offsetWidth) / 2}px`;
+    profileWindow.style.top = `${(innerHeight - profileWindow.offsetHeight) / 2}px`;
+
+    // Window focus (bring to front on click)
+    profileWindow.addEventListener('mousedown', () => {
+        profileWindow.style.zIndex = zIndexCounter++;
+    });
+
+
+    // Minimise toggle (Updated with requested logic)
+    const minimiseBtn = profileWindow.querySelector('#profile-minimise');
+    minimiseBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent drag from starting on button click
+      content.classList.toggle('hidden');
+      minimiseBtn.textContent = content.classList.contains('hidden') ? '+' : '–';
+    });
+
+    // Close button
+    const closeBtn = profileWindow.querySelector('#profile-close');
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent drag from starting on button click
+      profileWindow.classList.remove('active'); // Fade out effect
+      setTimeout(() => {
+        profileWindow.remove();
+        profileWindow = null;
+      }, 200); // Match CSS transition duration
+    });
+
+    // Draggable by titlebar (not buttons)
+    let offsetX, offsetY;
+    titlebar.addEventListener('mousedown', e => {
+      if (e.target.closest('#profile-controls')) return; // don’t drag when clicking buttons
+
+      // Bring to front on drag start
+      profileWindow.style.zIndex = zIndexCounter++;
+      
+      offsetX = e.clientX - profileWindow.offsetLeft;
+      offsetY = e.clientY - profileWindow.offsetTop;
+      
+      function onMouseMove(e) {
+        profileWindow.style.left = `${e.clientX - offsetX}px`;
+        profileWindow.style.top = `${e.clientY - offsetY}px`;
+      }
+      function onMouseUp() {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
+
+    setTimeout(() => profileWindow.classList.add('active'), 50);
+  }
+
+  // Event listeners for the buttons
+  profileButton.addEventListener('click', createProfileWindow);
+  mobileProfileButton.addEventListener('click', () => {
+    createProfileWindow();
+    mobileMenu.classList.add('hidden'); // Close mobile menu after clicking
+  });
 </script>
 </body>
 </html>

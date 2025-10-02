@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Interactive Cargo Portfolio</title>
+  <title>Portfolio — Loops.szn</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css">
   <style>
@@ -19,17 +19,185 @@
       background-size: 40px 40px;
       z-index: -1;
       will-change: transform;
-      transition: transform 0.1s linear;
     }
 
-    /* Window styling */
+    /* ----------------------------
+       Window styling
+    ----------------------------- */
     .project-window {
       border: 1px solid #000;
       border-radius: 2px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       overflow: hidden;
       background: white;
+    }
+    .window-titlebar {
+      background: #111;
+      color: white;
+      font-size: 12px;
+      padding: 4px 8px;
+      font-family: "Courier New", monospace;
+      border-bottom: 1px solid black;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+    .window-body {
       padding: 16px;
+    }
+
+    /* ----------------------------
+       Tabs
+    ----------------------------- */
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid black;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tab-bar::-webkit-scrollbar { display: none; }
+    .tab {
+      font-size: 12px;
+      font-family: "Courier New", monospace;
+      padding: 4px 8px;
+      border: 1px solid black;
+      background: white;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .tab.active {
+      background: black;
+      color: white;
+    }
+    .media-pane { display: none; }
+    .media-pane.active { display: block; }
+
+    /* ----------------------------
+       Project selector styling
+    ----------------------------- */
+    .project-link {
+      display: flex;
+      align-items: center;
+      padding: 6px 10px;
+      border: 1px solid black;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: "Courier New", monospace;
+      font-size: 13px;
+    }
+    .project-link:hover {
+      background: #f3f3f3;
+    }
+    .project-link.active {
+      background: black;
+      color: white;
+      font-weight: bold;
+    }
+    .project-link::before {
+      content: "📄";
+      margin-right: 6px;
+    }
+    
+    /* ----------------------------
+       Profile Window Styles
+    ----------------------------- */
+    #profile-window {
+      position: fixed;
+      width: 450px; 
+      background: white;
+      border: 1px solid black;
+      border-radius: 2px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      opacity: 0;
+      transform: scale(0.98);
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+      z-index: 999;
+      overflow: hidden;
+    }
+    #profile-window.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+    #profile-titlebar {
+      background: #111;
+      color: white;
+      font-size: 12px;
+      padding: 4px 8px;
+      font-family: "Courier New", monospace;
+      border-bottom: 1px solid black;
+      text-transform: uppercase;
+      user-select: none;
+      cursor: grab;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    /* Control Button Container */
+    #profile-controls {
+      display: flex;
+      gap: 6px;
+    }
+    /* Base Button Style */
+    #profile-controls button {
+      /* Re-added original button styling */
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: "Courier New", monospace;
+      width: 18px;
+      height: 18px;
+      line-height: 1;
+      text-align: center;
+      padding: 0;
+      transition: background 0.1s;
+    }
+    /* Hover Effect (Re-added) */
+    #profile-controls button:hover {
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+    }
+
+    #profile-content {
+      display: flex;
+      padding: 20px;
+      gap: 20px;
+      font-family: "Courier New", monospace;
+      font-size: 14px;
+      line-height: 1.4;
+      transition: all 0.3s ease-out;
+      height: auto;
+      opacity: 1;
+    }
+    #profile-content.hidden {
+      height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      opacity: 0;
+      overflow: hidden; 
+    }
+    #profile-content img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border: 1px solid #ddd;
+    }
+    #profile-description {
+      flex: 1;
+    }
+
+    /* ----------------------------
+       Responsive tweaks
+    ----------------------------- */
+    @media (max-width: 768px) {
+      aside { display: none; }
     }
   </style>
 </head>
@@ -37,45 +205,54 @@
 
   <div id="parallax-grid"></div>
 
-  <div class="container mx-auto">
+  <header class="container mx-auto flex justify-between items-center py-6 px-4 border-b border-black relative">
+    <h1 class="heading-font text-2xl">
+      <a href="index.html" class="hover:underline">Loops.szn</a>
+    </h1>
+    <nav class="hidden md:flex gap-6 text-sm">
+      <a href="portfolio.html" class="hover:underline">PORTFOLIO</a>
+      <button id="profile-btn" class="hover:underline">PROFILE</button>
+    </nav>
+    <div class="md:hidden flex items-center">
+      <button id="menu-toggle" class="focus:outline-none">
+        <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+             d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <div id="mobile-menu" class="hidden absolute right-4 top-full mt-2 w-40 bg-white border border-black rounded shadow-lg z-50 flex flex-col">
+      <a href="portfolio.html" class="px-4 py-2 hover:bg-gray-200 border-b border-gray-100">PORTFOLIO</a>
+      <button id="mobile-profile-btn" class="px-4 py-2 hover:bg-gray-200 border-b border-gray-100">PROFILE</button>
+      <button class="px-4 py-2 hover:bg-gray-200">CV</button>
+    </div>
+  </header>
 
-    <header class="container mx-auto flex justify-between items-center py-6 px-4 border-b border-black relative">
-      <h1 class="heading-font text-2xl">
-        <a href="index.html" class="hover:underline">Loops.szn</a>
-      </h1>
+  <div class="flex flex-col md:flex-row min-h-screen container mx-auto">
+    <main class="w-full md:w-2/3 p-8 space-y-20">
 
-      <nav class="hidden md:flex gap-6 text-sm">
-        <a href="portfolio.html" class="hover:underline">PORTFOLIO</a>
-        <button class="hover:underline">PROFILE</button>
-        <button class="hover:underline">CV</button>
-      </nav>
-
-      <div class="md:hidden flex items-center">
-        <button id="menu-toggle" class="focus:outline-none">
-          <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" stroke-width="2"
-               viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-        </button>
-      </div>
-
-      <div id="mobile-menu" class="hidden absolute right-4 top-full mt-2 w-40 bg-white border border-black rounded shadow-lg z-50 flex flex-col">
-        <a href="portfolio.html" class="px-4 py-2 hover:bg-gray-200 border-b border-gray-100">PORTFOLIO</a>
-        <button class="px-4 py-2 hover:bg-gray-200 border-b border-gray-100">PROFILE</button>
-        <button class="px-4 py-2 hover:bg-gray-200">CV</button>
-      </div>
-    </header>
-
-    <div class="flex flex-col md:flex-row min-h-screen">
-
-      <main class="w-full md:w-2/3 p-8 space-y-20">
-        <section id="project-1" class="project-section project-window" data-image="https://placehold.co/800x500/808080/fff/png?text=Szn+X">
-          <h3 class="heading-font text-2xl mb-4">Szn X</h3>
-          <img src="https://placehold.co/1200x700/808080/fff/png?text=Szn+X" class="w-full shadow transition hover:shadow-lg mb-4" />
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <section id="project-1" class="project-window">
+        <div class="window-titlebar">SZN X</div>
+        <div class="window-body">
+          <div class="tab-bar">
+            <button class="tab active" data-target="sx1">Image 1</button>
+            <button class="tab" data-target="sx2">Image 2</button>
+            <button class="tab" data-target="sx3">Video</button>
+          </div>
+          <div id="sx1" class="media-pane active">
+            <img src="https://placehold.co/800x500/808080/fff/png?text=Szn+X+1" class="w-full h-auto">
+          </div>
+          <div id="sx2" class="media-pane">
+            <img src="https://placehold.co/800x500/606060/fff/png?text=Szn+X+2" class="w-full h-auto">
+          </div>
+          <div id="sx3" class="media-pane">
+            <video controls class="w-full h-auto">
+              <source src="example.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
               <h4 class="text-lg font-semibold mb-1">Description</h4>
-              <p class="text-sm leading-relaxed">Experimental creative direction and design execution for Szn X release visuals. Layered digital storytelling and identity work for the August release.</p>
+              <p class="text-sm leading-relaxed">Experimental creative direction and design execution for Szn X release visuals.</p>
             </div>
             <div>
               <h4 class="text-lg font-semibold mb-1">Details</h4>
@@ -84,15 +261,28 @@
               <p class="text-sm">Role: Marketing Designer</p>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section id="project-2" class="project-section project-window" data-image="https://placehold.co/800x500/404040/fff/png?text=Severance">
-          <h3 class="heading-font text-2xl mb-4">Severance</h3>
-          <img src="https://placehold.co/1200x700/404040/fff/png?text=Severance" class="w-full shadow transition hover:shadow-lg mb-4" />
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <section id="project-2" class="project-window">
+        <div class="window-titlebar">SEVERANCE</div>
+        <div class="window-body">
+          <div class="tab-bar">
+            <button class="tab active" data-target="sev1">Image</button>
+            <button class="tab" data-target="sev2">Video</button>
+          </div>
+          <div id="sev1" class="media-pane active">
+            <img src="https://placehold.co/800x500/404040/fff/png?text=Severance+1" class="w-full h-auto">
+          </div>
+          <div id="sev2" class="media-pane">
+            <video controls class="w-full h-auto">
+              <source src="example2.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
               <h4 class="text-lg font-semibold mb-1">Description</h4>
-              <p class="text-sm leading-relaxed">Designed campaign materials and produced narrative-driven edits for Severance. Focused on cinematic cuts and promotional storytelling.</p>
+              <p class="text-sm leading-relaxed">Designed campaign materials and produced narrative-driven edits for Severance.</p>
             </div>
             <div>
               <h4 class="text-lg font-semibold mb-1">Details</h4>
@@ -101,15 +291,26 @@
               <p class="text-sm">Role: Video Editor</p>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section id="project-3" class="project-section project-window" data-image="https://placehold.co/800x500/606060/fff/png?text=iOS26">
-          <h3 class="heading-font text-2xl mb-4">iOS 26</h3>
-          <img src="https://placehold.co/1200x700/606060/fff/png?text=iOS26" class="w-full shadow transition hover:shadow-lg mb-4" />
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <section id="project-3" class="project-window">
+        <div class="window-titlebar">iOS 26</div>
+        <div class="window-body">
+          <div class="tab-bar">
+            <button class="tab active" data-target="ios1">Mockup</button>
+            <button class="tab" data-target="ios2">Promo</button>
+          </div>
+          <div id="ios1" class="media-pane active">
+            <img src="https://placehold.co/800x500/606060/fff/png?text=iOS26+1" class="w-full h-auto">
+          </div>
+          <div id="ios2" class="media-pane">
+            <img src="https://placehold.co/800x500/202020/fff/png?text=iOS26+2" class="w-full h-auto">
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
               <h4 class="text-lg font-semibold mb-1">Description</h4>
-              <p class="text-sm leading-relaxed">Exploration of UI paradigms and launch visuals for the iOS 26 concept. Deliverables included mockups, promotional assets and motion snippets.</p>
+              <p class="text-sm leading-relaxed">Exploration of UI paradigms and launch visuals for the iOS 26 concept.</p>
             </div>
             <div>
               <h4 class="text-lg font-semibold mb-1">Details</h4>
@@ -118,15 +319,26 @@
               <p class="text-sm">Role: Marketing Designer</p>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section id="project-4" class="project-section project-window" data-image="https://placehold.co/800x500/707070/fff/png?text=YZY+App">
-          <h3 class="heading-font text-2xl mb-4">YZY App</h3>
-          <img src="https://placehold.co/1200x700/707070/fff/png?text=YZY+App" class="w-full shadow transition hover:shadow-lg mb-4" />
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <section id="project-4" class="project-window">
+        <div class="window-titlebar">YZY APP</div>
+        <div class="window-body">
+          <div class="tab-bar">
+            <button class="tab active" data-target="yzy1">Image 1</button>
+            <button class="tab" data-target="yzy2">Image 2</button>
+          </div>
+          <div id="yzy1" class="media-pane active">
+            <img src="https://placehold.co/800x500/707070/fff/png?text=YZY+App+1" class="w-full h-auto">
+          </div>
+          <div id="yzy2" class="media-pane">
+            <img src="https://placehold.co/800x500/303030/fff/png?text=YZY+App+2" class="w-full h-auto">
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
               <h4 class="text-lg font-semibold mb-1">Description</h4>
-              <p class="text-sm leading-relaxed">Creative support and promotional video edits for the YZY App launch. Focus on minimal UI framing and short-form promotional cuts.</p>
+              <p class="text-sm leading-relaxed">Creative support and promotional video edits for the YZY App launch.</p>
             </div>
             <div>
               <h4 class="text-lg font-semibold mb-1">Details</h4>
@@ -135,84 +347,194 @@
               <p class="text-sm">Role: Video Editor</p>
             </div>
           </div>
-        </section>
-      </main>
-
-      <aside class="w-full md:w-1/3 p-8 sticky-list-container">
-        <div class="project-window h-full flex flex-col">
-          <h2 class="text-3xl font-bold heading-font mb-8">PROJECT SELECTOR</h2>
-          <ul class="space-y-6 text-sm">
-            <li class="project-link cursor-pointer" data-id="project-1">01 — Szn X</li>
-            <li class="project-link cursor-pointer" data-id="project-2">02 — Severance</li>
-            <li class="project-link cursor-pointer" data-id="project-3">03 — iOS 26</li>
-            <li class="project-link cursor-pointer" data-id="project-4">04 — YZY App</li>
-          </ul>
-
-          <div id="preview-container" class="mt-10 opacity-0 preview-animate hidden md:block">
-            <img id="preview-image" src="" alt="Preview" class="w-full shadow-md">
-          </div>
         </div>
-      </aside>
-    </div>
+      </section>
+
+    </main>
+
+    <aside class="w-full md:w-1/3 p-8 sticky top-8 h-fit hidden md:block">
+      <div class="project-window flex flex-col" id="selector-window">
+        <div class="window-titlebar">
+          PROJECT SELECTOR
+          <button id="toggle-selector" class="text-xs px-2 py-1 bg-white border border-white text-black hover:bg-gray-200">–</button>
+        </div>
+        <div class="window-body" id="selector-body">
+          <ul class="space-y-2">
+            <li class="project-link" data-id="project-1">01 — Szn X</li>
+            <li class="project-link" data-id="project-2">02 — Severance</li>
+            <li class="project-link" data-id="project-3">03 — iOS 26</li>
+            <li class="project-link" data-id="project-4">04 — YZY App</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
   </div>
 
   <script>
+    // Global z-index counter for stacking windows
+    let zIndexCounter = 10;
+    
     // Mobile menu toggle
     const menuToggle = document.getElementById('menu-toggle');
     const mobileMenu = document.getElementById('mobile-menu');
-
     menuToggle.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
+        mobileMenu.classList.toggle('hidden');
+    });
+    
+    // Tabs functionality
+    document.querySelectorAll('.tab-bar').forEach(tabBar => {
+        tabBar.addEventListener('click', (e) => {
+            if (e.target.classList.contains('tab')) {
+                const targetId = e.target.dataset.target;
+                const parentBody = e.target.closest('.window-body');
+                
+                // Deactivate all tabs and panes in this window
+                parentBody.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                parentBody.querySelectorAll('.media-pane').forEach(p => p.classList.remove('active'));
+                
+                // Activate the clicked tab and corresponding pane
+                e.target.classList.add('active');
+                document.getElementById(targetId).classList.add('active');
+            }
+        });
     });
 
-    document.addEventListener('click', (e) => {
-      if (!mobileMenu.contains(e.target) && !menuToggle.contains(e.target)) {
-        mobileMenu.classList.add('hidden');
-      }
-    });
-
-    // Project preview & scroll highlighting
+    // Project selector behavior
     const links = document.querySelectorAll('.project-link');
-    const sections = document.querySelectorAll('.project-section');
-    const previewContainer = document.getElementById('preview-container');
-    const previewImage = document.getElementById('preview-image');
-
+    const sections = document.querySelectorAll('.project-window');
     links.forEach(link => {
-      link.addEventListener('mouseenter', () => {
-        const target = document.getElementById(link.dataset.id);
-        previewImage.src = target.dataset.image;
-        previewContainer.style.opacity = '1';
-        previewContainer.style.transform = 'scale(1)';
-      });
-      link.addEventListener('mouseleave', () => {
-        previewContainer.style.opacity = '0';
-      });
-
       link.addEventListener('click', () => {
         document.getElementById(link.dataset.id).scrollIntoView({ behavior: 'smooth' });
       });
     });
-
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         const link = document.querySelector(`.project-link[data-id="${entry.target.id}"]`);
-        if (entry.isIntersecting) {
-          link.classList.add('text-blue-600', 'font-bold');
-        } else {
-          link.classList.remove('text-blue-600', 'font-bold');
+        if (link) {
+          if (entry.isIntersecting) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
         }
       });
     }, { threshold: 0.5 });
-
     sections.forEach(section => observer.observe(section));
 
-    // Parallax grid movement
-    const grid = document.getElementById('parallax-grid');
-    document.addEventListener('mousemove', e => {
-      const { innerWidth, innerHeight } = window;
-      const x = (e.clientX / innerWidth - 0.5) * 20;
-      const y = (e.clientY / innerHeight - 0.5) * 20;
-      grid.style.transform = `translate(${x}px, ${y}px)`;
+    // Collapse/expand selector
+    const toggleBtn = document.getElementById("toggle-selector");
+    const selectorBody = document.getElementById("selector-body");
+    toggleBtn.addEventListener("click", () => {
+      selectorBody.classList.toggle("hidden");
+      toggleBtn.textContent = selectorBody.classList.contains("hidden") ? "+" : "–";
+    });
+
+
+    // -----------------------------
+    // Profile Window Logic (Updated Text)
+    // -----------------------------
+    const profileButton = document.getElementById('profile-btn');
+    const mobileProfileButton = document.getElementById('mobile-profile-btn');
+    let profileWindow = null;
+
+    function createProfileWindow() {
+        if (profileWindow) {
+            profileWindow.style.zIndex = zIndexCounter++;
+            return;
+        }
+
+        profileWindow = document.createElement('div');
+        profileWindow.id = 'profile-window';
+        profileWindow.style.zIndex = zIndexCounter++; 
+
+        const titlebar = document.createElement('div');
+        titlebar.id = 'profile-titlebar';
+        titlebar.innerHTML = `
+          <span>PROFILE</span>
+          <div id="profile-controls">
+            <button id="profile-minimise">–</button>
+            <button id="profile-close">×</button>
+          </div>
+        `;
+
+        const content = document.createElement('div');
+        content.id = 'profile-content';
+        // UPDATED CONTENT HERE
+        content.innerHTML = `
+          <img src="portrait.jpg" alt="Portrait">
+          <div id="profile-description">
+          <h2 class="text-lg font-bold mb-2">Loops.szn</h2>
+          <p>Loops.szn is a motion designer with extensive experience, including work on the YZY App. He crafts fluid, impactful animations that merge technical skill with creative vision.</p>
+          <br> <p>Always in beta. Always in loops.</p>
+          </div>
+        `;
+
+        profileWindow.appendChild(titlebar);
+        profileWindow.appendChild(content);
+        document.body.appendChild(profileWindow);
+
+        // Center on screen once its size is calculated
+        const { innerWidth, innerHeight } = window;
+        setTimeout(() => {
+            profileWindow.style.left = `${(innerWidth - profileWindow.offsetWidth) / 2}px`;
+            profileWindow.style.top = `${(innerHeight - profileWindow.offsetHeight) / 2}px`;
+            profileWindow.classList.add('active'); 
+        }, 10);
+        
+
+        // Window focus (bring to front on click)
+        profileWindow.addEventListener('mousedown', () => {
+            profileWindow.style.zIndex = zIndexCounter++;
+        });
+
+
+        // Minimise toggle 
+        const minimiseBtn = profileWindow.querySelector('#profile-minimise');
+        minimiseBtn.addEventListener('click', (e) => {
+          e.stopPropagation(); 
+          content.classList.toggle('hidden');
+          minimiseBtn.textContent = content.classList.contains('hidden') ? '+' : '–';
+        });
+
+        // Close button
+        const closeBtn = profileWindow.querySelector('#profile-close');
+        closeBtn.addEventListener('click', (e) => {
+          e.stopPropagation(); 
+          profileWindow.classList.remove('active'); 
+          setTimeout(() => {
+            profileWindow.remove();
+            profileWindow = null;
+          }, 200); 
+        });
+
+        // Draggable by titlebar (not buttons)
+        let offsetX, offsetY;
+        titlebar.addEventListener('mousedown', e => {
+          if (e.target.closest('#profile-controls')) return; 
+
+          profileWindow.style.zIndex = zIndexCounter++;
+          
+          offsetX = e.clientX - profileWindow.offsetLeft;
+          offsetY = e.clientY - profileWindow.offsetTop;
+          
+          function onMouseMove(e) {
+            profileWindow.style.left = `${e.clientX - offsetX}px`;
+            profileWindow.style.top = `${e.clientY - offsetY}px`;
+          }
+          function onMouseUp() {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+          }
+          document.addEventListener('mousemove', onMouseMove);
+          document.addEventListener('mouseup', onMouseUp);
+        });
+    }
+
+    // Event listeners for the buttons
+    profileButton.addEventListener('click', createProfileWindow);
+    mobileProfileButton.addEventListener('click', () => {
+      createProfileWindow();
+      mobileMenu.classList.add('hidden'); 
     });
   </script>
 </body>
