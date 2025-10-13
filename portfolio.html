@@ -5,8 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portfolio — Loops.szn</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css"> 
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
   <style>
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+    /* ----------------------------
+        MARQUEE ANIMATION STYLES (NEW)
+    ----------------------------- */
+    @keyframes marquee-scroll {
+      /* Start position: content is off-screen to the right by its own width plus padding */
+      0% { transform: translateX(calc(100% + 40px)); } 
+      /* End position: content moves fully past the left edge */
+      100% { transform: translateX(-100%); } 
+    }
+    .marquee-box {
+        /* Hide content that exceeds the container width */
+        overflow: hidden; 
+        white-space: nowrap;
+        background: #eee; /* Grey background matching your image */
+        flex-grow: 1;
+        display: flex; /* Required for stretching content */
+        align-items: center;
+    }
+    .marquee-content {
+        display: inline-block;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        /* Padding is kept at 40px for spacing between loops */
+        padding: 0 40px; 
+        /* Apply the infinite loop animation */
+        animation: marquee-scroll 18s linear infinite; 
+    }
+
     /* ----------------------------
        Parallax Grid Background
     ----------------------------- */
@@ -19,6 +51,56 @@
       background-size: 40px 40px;
       z-index: -1;
       will-change: transform;
+    }
+    
+    /* ----------------------------
+        Header/Project Selector Styles
+    ----------------------------- */
+    .header-window {
+        border: 1px solid #111;
+        background: white;
+        border-radius: 2px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: stretch;
+    }
+    .header-titlebar {
+        background: #111;
+        color: white;
+        font-size: 14px;
+        font-family: "Courier New", monospace;
+        padding: 8px 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-right: 1px solid #111;
+        /* Important for making the anchor tag behave inside the titlebar */
+        display: flex; 
+        align-items: center;
+    }
+    .header-tabs {
+        display: flex;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        /* The header-tabs background is now ONLY for the nav links */
+        flex-grow: 0; /* Changed to 0 so marquee takes remaining space */
+        justify-content: flex-end;
+    }
+    .header-tabs > a,
+    .header-tabs > button {
+        padding: 8px 16px;
+        border-left: 1px solid #ccc;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.1s ease;
+        display: flex; 
+        align-items: center;
+        height: 100%;
+        background: white;
+    }
+    .header-tabs > a:hover,
+    .header-tabs > button:hover {
+        background: #f0f0f0;
     }
 
     /* ----------------------------
@@ -105,7 +187,7 @@
     }
     
     /* ----------------------------
-       Profile Window Styles
+       Profile Window Styles (Kept as is, compatible with new header logic)
     ----------------------------- */
     #profile-window {
       position: fixed;
@@ -145,7 +227,6 @@
     }
     /* Base Button Style */
     #profile-controls button {
-      /* Re-added original button styling */
       background: transparent;
       border: none;
       color: white;
@@ -159,7 +240,7 @@
       padding: 0;
       transition: background 0.1s;
     }
-    /* Hover Effect (Re-added) */
+    /* Hover Effect */
     #profile-controls button:hover {
       background: rgba(255,255,255,0.15);
       border-radius: 2px;
@@ -205,20 +286,31 @@
 
   <div id="parallax-grid"></div>
 
-  <header class="container mx-auto flex justify-between items-center py-6 px-4 border-b border-black relative">
-    <h1 class="heading-font text-2xl">
-      <a href="index.html" class="hover:underline">Loops.szn</a>
-    </h1>
-    <nav class="hidden md:flex gap-6 text-sm">
-      <a href="portfolio.html" class="hover:underline">PORTFOLIO</a>
-      <button id="profile-btn" class="hover:underline">PROFILE</button>
-    </nav>
-    <div class="md:hidden flex items-center">
-      <button id="menu-toggle" class="focus:outline-none">
-        <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" stroke-width="2"
-             viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
-             d="M4 6h16M4 12h16M4 18h16"/></svg>
-      </button>
+  <header class="container mx-auto py-6 px-4 relative z-20" id="site-header">
+    <div class="header-window hidden md:flex" id="desktop-nav">
+        <div class="header-titlebar">
+            <a href="index.html" class="text-white no-underline hover:underline">
+                LOOPS.SZN / SITE-NAV.EXE
+            </a>
+        </div>
+        
+        <div class="marquee-box">
+            <div class="marquee-content">// DESIGN / ANIMATION / UI-UX / MOTION GRAPHICS / VIDEO EDITING / CREATIVE DIRECTION // </div>
+        </div>
+        
+        <nav class="header-tabs">
+            <a href="portfolio.html">PORTFOLIO</a>
+            <button id="profile-btn">PROFILE</button>
+        </nav>
+    </div>
+    <div class="md:hidden flex justify-between items-center border-b border-black pb-4">
+        <h1 class="text-2xl font-semibold">
+            <a href="index.html" class="hover:underline">Loops.szn</a>
+        </h1>
+        <button id="menu-toggle" class="focus:outline-none">
+            <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
     </div>
     <div id="mobile-menu" class="hidden absolute right-4 top-full mt-2 w-40 bg-white border border-black rounded shadow-lg z-50 flex flex-col">
       <a href="portfolio.html" class="px-4 py-2 hover:bg-gray-200 border-b border-gray-100">PORTFOLIO</a>
@@ -226,7 +318,6 @@
       <button class="px-4 py-2 hover:bg-gray-200">CV</button>
     </div>
   </header>
-
   <div class="flex flex-col md:flex-row min-h-screen container mx-auto">
     <main class="w-full md:w-2/3 p-8 space-y-20">
 
@@ -374,14 +465,22 @@
     // Global z-index counter for stacking windows
     let zIndexCounter = 10;
     
-    // Mobile menu toggle
+    // --- Mobile menu toggle ---
     const menuToggle = document.getElementById('menu-toggle');
     const mobileMenu = document.getElementById('mobile-menu');
-    menuToggle.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-    });
-    
-    // Tabs functionality
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+          mobileMenu.classList.toggle('hidden');
+        });
+        // Add document click listener to close mobile menu
+        document.addEventListener('click', (e) => {
+          if (!mobileMenu.contains(e.target) && !menuToggle.contains(e.target) && !mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
+          }
+        });
+    }
+
+    // Tabs functionality (No Change)
     document.querySelectorAll('.tab-bar').forEach(tabBar => {
         tabBar.addEventListener('click', (e) => {
             if (e.target.classList.contains('tab')) {
@@ -399,7 +498,7 @@
         });
     });
 
-    // Project selector behavior
+    // Project selector behavior (No Change)
     const links = document.querySelectorAll('.project-link');
     const sections = document.querySelectorAll('.project-window');
     links.forEach(link => {
@@ -412,16 +511,22 @@
         const link = document.querySelector(`.project-link[data-id="${entry.target.id}"]`);
         if (link) {
           if (entry.isIntersecting) {
-            link.classList.add('active');
+            // Check if it's the element mostly in view before setting active
+            const isPrimary = entries.every(e => !e.isIntersecting || e.intersectionRatio <= entry.intersectionRatio);
+            if (isPrimary) {
+               document.querySelectorAll('.project-link').forEach(l => l.classList.remove('active'));
+               link.classList.add('active');
+            }
           } else {
+            // Remove active class when leaving view
             link.classList.remove('active');
           }
         }
       });
-    }, { threshold: 0.5 });
+    }, { threshold: [0, 0.5, 1] }); // Use multiple thresholds for smoother detection
     sections.forEach(section => observer.observe(section));
 
-    // Collapse/expand selector
+    // Collapse/expand selector (No Change)
     const toggleBtn = document.getElementById("toggle-selector");
     const selectorBody = document.getElementById("selector-body");
     toggleBtn.addEventListener("click", () => {
@@ -431,7 +536,7 @@
 
 
     // -----------------------------
-    // Profile Window Logic (Updated Text)
+    // Profile Window Logic (From Index Page)
     // -----------------------------
     const profileButton = document.getElementById('profile-btn');
     const mobileProfileButton = document.getElementById('mobile-profile-btn');
@@ -459,13 +564,19 @@
 
         const content = document.createElement('div');
         content.id = 'profile-content';
-        // UPDATED CONTENT HERE
         content.innerHTML = `
-          <img src="portrait.jpg" alt="Portrait">
+          <div class="flex flex-col items-start gap-4">
+              <img src="portrait.jpg" alt="Portrait">
+              <div class="space-y-1 text-sm">
+                <a href="#" target="_blank" class="block text-blue-700 hover:underline">// BEHANCE</a>
+                <a href="#" target="_blank" class="block text-blue-700 hover:underline">// INSTAGRAM</a>
+                <a href="#" target="_blank" class="block text-blue-700 hover:underline">// TIKTOK</a>
+              </div>
+          </div>
           <div id="profile-description">
           <h2 class="text-lg font-bold mb-2">Loops.szn</h2>
           <p>Loops.szn is a motion designer with extensive experience, including work on the YZY App. He crafts fluid, impactful animations that merge technical skill with creative vision.</p>
-          <br> <p>Always in beta. Always in loops.</p>
+          <br><p>Always in beta. Always in loops.</p>
           </div>
         `;
 
@@ -507,7 +618,7 @@
           }, 200); 
         });
 
-        // Draggable by titlebar (not buttons)
+        // Draggable by titlebar 
         let offsetX, offsetY;
         titlebar.addEventListener('mousedown', e => {
           if (e.target.closest('#profile-controls')) return; 
