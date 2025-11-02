@@ -359,15 +359,69 @@
 }
 /* --- MOBILE HEADER WIDTH CONTROL --- */
 @media (max-width: 768px) {
-  .header-window {
-    max-width: 95% !important;   /* keeps it slightly inset from screen edges */
-    margin: 10px auto !important; /* centers it + adds top/bottom space */
-    border-radius: 4px !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25) !important;
+  aside { display: none; }
+
+  /* Force the desktop nav bar to display on mobile */
+  #desktop-nav {
+    display: flex !important;
+    width: 100%;
+    flex-wrap: nowrap;
+    /* Re-add the full border for mobile */
+    border: 1px solid #111; /* Explicitly set border */
+    border-radius: 2px; /* Maintain rounded corners */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Maintain shadow */
   }
 
-  #site-header {
-    margin-top: 16px !important; /* reduce top spacing for small screens */
+  /* Hide the dedicated mobile header/hamburger section if present */
+  .md\:hidden {
+      display: none !important;
+  }
+
+  /* Make the Marquee Box shrink to fit and enable horizontal scrolling */
+  .marquee-box {
+      flex-shrink: 1; /* Allow it to shrink */
+      min-width: 0; /* Important for flex items inside horizontal scroll */
+      overflow-x: hidden; /* Hide the marquee overflow for space efficiency */
+      background: #eee; /* Ensure grey background is back */
+  }
+
+  /* Speed up the marquee animation for compact screens */
+  .marquee-content {
+      font-size: 12px;
+      animation-duration: 10s; /* Faster scroll */
+      padding: 0 10px;
+  }
+
+  /* Make the Titlebar (LOOPS.SZN) static and ensure it doesn't shrink */
+  .header-titlebar {
+      flex-shrink: 0;
+      font-size: 12px; /* Smaller font */
+      padding: 6px 12px; /* Smaller padding */
+      border-right: 1px solid #111; /* Ensure right border */
+  }
+
+  /* Ensure the nav tabs wrap or scroll if needed, but we keep them inline-flex */
+  .header-tabs {
+      flex-shrink: 0; /* Prevent the buttons from shrinking much */
+      flex-wrap: nowrap; /* Keep them in one line */
+      overflow-x: auto; /* Allow horizontal scrolling if buttons are too wide */
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+  }
+
+  /* Hide scrollbar for header-tabs */
+  .header-tabs::-webkit-scrollbar {
+      display: none;
+  }
+
+  .header-tabs > a,
+  .header-tabs > button {
+      flex-shrink: 0; /* Prevent individual buttons from collapsing */
+      font-size: 12px; /* Smaller font */
+      padding: 6px 10px; /* Smaller padding */
+      height: auto; /* Don't force 100% height, rely on padding */
+      border-left: 1px solid #ccc; /* Ensure left border */
+      background: white; /* Ensure white background */
   }
 }
 /* --- DESKTOP PROJECT WINDOW SIZE ADJUSTMENT --- */
@@ -428,6 +482,7 @@
     text-transform: uppercase;
     margin-left: 10px;
 }
+
 
 
   </style>
