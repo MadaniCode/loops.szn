@@ -625,7 +625,7 @@ function isMobile() { return window.innerWidth < 768; }
 let zIndexCounter = 50;
 let visitCount = parseInt(localStorage.getItem("visitCount") || "0", 10);
 visitCount++; localStorage.setItem("visitCount", visitCount);
-let cycleIndex = 0;
+let cycleIndex = Object.keys(projects).indexOf("drakeCanvas");
 let autoCycleInterval;
 let userInteracted = false;
 
