@@ -859,6 +859,25 @@
     }
 
     profileButton.addEventListener('click', createProfileWindow);
+      // Scroll to project if hash is present on page load
+  window.addEventListener('load', () => {
+    const hash = window.location.hash; // e.g., #project-1
+    if (hash) {
+      const target = document.querySelector(hash);
+      if (target) {
+        // Scroll the element into view smoothly
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // Highlight corresponding project link
+        const link = document.querySelector(`.project-link[data-id="${hash.substring(1)}"]`);
+        if (link) {
+          document.querySelectorAll('.project-link').forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+        }
+      }
+    }
+  });
+
   </script>
 
 </body>
